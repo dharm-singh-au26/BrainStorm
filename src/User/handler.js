@@ -1,4 +1,4 @@
-import { getUser , createUser , saveOtpInDb,getLatestOtp } from "./repo";
+import { getUser , createUser , saveOtpInDb,getLatestOtp,updateUser } from "./repo";
 import {User} from '../../db'
 import bcrypt, { hash } from 'bcrypt';
 import { generateToken } from './jwtToken'
@@ -82,9 +82,23 @@ export const otpConfirmation = async (otpData) => {
 
     const dbOtp = await getLatestOtp({userId})
     const isOtpValid = dbOtp && dbOtp[0] && dbOtp[0].otp == otp ;
-    console.log(isOtpValid)
+    return isOtpValid 
+}
 
+export const updatePassword = async(userData) => {
+    const {userId,password} = userData;
 
+    const saltRounds = 10;
+     
+    const hash = await bcrypt.hash(password, saltRounds)
+
+    const updatedUser = {
+        userId : userId,
+        password: hash
+
+    }
+    const savePassword = await updateUser(updatedUser.userId, { password: updatedUser.password })
+    return savePassword
 
 
 
