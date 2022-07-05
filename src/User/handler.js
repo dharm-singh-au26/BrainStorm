@@ -1,7 +1,8 @@
-import { getUser , createUser} from "./repo";
+import { getUser , createUser , saveOtpInDb,getLatestOtp } from "./repo";
 import {User} from '../../db'
 import bcrypt, { hash } from 'bcrypt';
 import { generateToken } from './jwtToken'
+import { emailSender } from "../utility/mailer";
 
 export const signUpHandler = async (userData) =>{
     const isEmailExist = await getUser({email: userData.email})
@@ -60,4 +61,31 @@ export const loginHandler = async (userData) =>{
     } catch (error) {
         return console.log(error)
     }
+}
+
+export const forgotPasswordHandler = async (userData) => {
+    const  {email} = userData
+       const existingUser = await getUser({email})
+       if(existingUser){
+        const otp = Math.floor(100000 + Math.random() * 900000);
+
+        const saveOtp = await saveOtpInDb({userId : existingUser[0]._id ,otp});
+
+        return await emailSender(email, `Here is your OTP to reset your password ${otp}`)
+
+
+    }
+}
+
+export const otpConfirmation = async (otpData) => {
+    const {otp ,userId , password , confirmPassword} = otpData ;
+
+    const dbOtp = await getLatestOtp({userId})
+    const isOtpValid = dbOtp && dbOtp[0] && dbOtp[0].otp == otp ;
+    console.log(isOtpValid)
+
+
+
+
+
 }

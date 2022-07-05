@@ -1,33 +1,38 @@
 import nodemailer from "nodemailer";
 
-const emailSender = async(email,message) =>{
-    // const account = await nodemailer.createTestAccount();
+export const emailSender = async(email,message) =>{
+
 
     const transporter = nodemailer.createTransport({
-        host: 'dharmjat454545@gmail.com',
+        host: 'dharmjat454.dj@gmail.com',
         port: 587,
         secure: false,
         service: 'gmail',
         auth: {
-            user : 'dharmjat454545@gmail.com',
-            pass : '06021995',
+            user : 'dharmjat45.dj@gmail.com',
+            pass : 'trbwzfilrvkkdvtr',
 
         },
     })
 
     const mailOptions = {
-        from : 'dharmjat454545@gmail.com',
+        from : 'dharmjat45.dj@gmail.com',
         to : email,
         subject : 'welcome to brainStorm',
         text : message,
     }
 
-    transporter.sendMail(mailOptions, (error,info) => {
-        if(error) console.log(error)
-        else{
-            console.log('Email Sent :' + info.response);
-            return info.response
+    try {
+        await transporter.sendMail(mailOptions)
+        return {
+            status: 'success',
+            message: 'mail sent'
         }
-    })
-
+    } catch (error) {
+        return {
+            status: 'failed',
+            message: 'something went wrong'
+        }
+        console.log(error)
+    }
 }

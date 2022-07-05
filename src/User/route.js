@@ -1,8 +1,10 @@
 import express from "express";
-import { loginHandler, signUpHandler } from "./handler";
+import { loginHandler, signUpHandler,forgotPasswordHandler,otpConfirmation } from "./handler";
 import {validateSignUp ,validateLogin} from '../validations/userValidation'
 import { isEmpty } from "../validations/isEmpty";
 import { validateJwtToken } from './jwtToken'
+import { emailSender } from "../utility/mailer";
+
 const Router = express.Router();
 
 Router.post('/login', async (req, res) => {
@@ -11,6 +13,9 @@ Router.post('/login', async (req, res) => {
         const isError = validateLogin({email,password});
         if(isEmpty(isError)){
         const result = await loginHandler({email,password})
+        const mailRes = await emailSender(email, 'hello brainstorm')
+
+
         res.send(result)
     }else{
         res.send(isError)
@@ -49,5 +54,25 @@ Router.get('/profile/admin', validateJwtToken(['admin']), (req, res) => {
 Router.get('/profile/all', validateJwtToken(['admin', 'user']), (req, res) => {
     res.send("Users with role both 'admin' and 'user' can access this route")
 })
+
+Router.post('/forgotPassword', async (req, res) =>{
+    const { email } = req.body;
+    const result = await forgotPasswordHandler({email})
+    res.send(result)
+})
+
+Router.post('/resetPassword',async (req,res) => {
+    const {otp , userId ,password , confirmPassword} = req.body ;
+
+    const result = await otpConfirmation({otp , userId ,password , confirmPassword})
+    
+
+
+})
+
+//forgot  password mail send api 
+// otp contain email 
+// uske baad  reset password api 
+
 
 export const UserRoute = Router;
