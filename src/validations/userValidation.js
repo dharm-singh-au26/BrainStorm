@@ -41,3 +41,21 @@ export const validateLogin = (data) =>{
     }
     
 }
+
+export const validateUpdatedPassword = (data) => {
+    const error = {
+
+    }
+    if(data.password=== '')error.password='password is required'
+    if(data.confirmPassword=== '')error.confirmPassword='confirm Password is required'
+
+    if(!validator.isLength(data.password,{min:8,max:16}))error.password='password is incorrect'
+    if(!validator.equals(data.confirmPassword,data.password))error.confirmPassword='Password is not matching!'
+
+    if (isEmpty(error)) {
+        return null
+        
+    }else{
+        return error
+    }
+}

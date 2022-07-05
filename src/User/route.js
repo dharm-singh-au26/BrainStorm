@@ -1,6 +1,6 @@
 import express from "express";
-import { loginHandler, signUpHandler,forgotPasswordHandler,otpConfirmation } from "./handler";
-import {validateSignUp ,validateLogin} from '../validations/userValidation'
+import { loginHandler, signUpHandler,forgotPasswordHandler,otpConfirmation,updatePassword} from "./handler";
+import {validateSignUp ,validateLogin ,validateUpdatedPassword} from '../validations/userValidation'
 import { isEmpty } from "../validations/isEmpty";
 import { validateJwtToken } from './jwtToken'
 import { emailSender } from "../utility/mailer";
@@ -65,14 +65,26 @@ Router.post('/resetPassword',async (req,res) => {
     const {otp , userId ,password , confirmPassword} = req.body ;
 
     const result = await otpConfirmation({otp , userId ,password , confirmPassword})
-    
+    if(result){
 
+        const matchPassword = validateUpdatedPassword({password,confirmPassword})
+        if(isEmpty(matchPassword)){
 
+            const passwordReset = await updatePassword({userId ,password })
+            res.send(passwordReset)
+        }else{
+            res.send(matchPassword)
+        }
+   
+
+    }else{
+        res.send({
+            message:'otp validation failed plz try again'
+        })
+    }
 })
 
-//forgot  password mail send api 
-// otp contain email 
-// uske baad  reset password api 
+
 
 
 export const UserRoute = Router;

@@ -9,7 +9,8 @@ export const createUser = async (user) =>{
 }
 
 export const updateUser = async(id,user) =>{
-    return await User.findByIdAndUpdate(id,user)
+    const result = await User.findByIdAndUpdate(id,user)
+    return result
 }
 
 export const saveOtpInDb = async (otpData) => {
