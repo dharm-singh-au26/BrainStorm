@@ -1,34 +1,28 @@
 import  express  from "express";
 import { profileHandler } from "./handler";
 import { validateJwtToken } from '../User/jwtToken'
-
+import { upload } from '../utility/profileupload'
 
 const Router = express.Router();
 
-Router.get('/userinfo/:userId', validateJwtToken(['admin', 'user']), async (req,res) => {
-
-    const {phone,address,pincode,district,state,country,profileImage }  = req.body;
+Router.post('/userinfo/:userId', upload.single('image'),validateJwtToken(['admin', 'user']), async (req, res) => {
+    console.log(req.file)
+    const { file, fileName } = req.file;
+    const {phone,address,pincode,district,state,country,image}  = req.body;
     const userId = req.params.userId;
+    const fillDetails = await  profileHandler({phone,address,pincode,district,state,country, userId,image, file, fileName});
 
-
-    const fillDetails = await  profileHandler({phone,address,pincode,district,state,country, userId });
-
-    if(fillDetails){
-        res.send(
-            {
+    if(fillDetails){ 
+        res.send({
                 message : 'Detail saved Successfully',
                 data : fillDetails
-            }
-        )
-    
+            })
     }else{
         res.send({
             message: 'something went wrong'
 
         })
     }
-
-
 })
 
 export const ProfileRoute = Router;

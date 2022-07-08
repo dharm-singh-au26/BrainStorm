@@ -1,33 +1,14 @@
 import multer from 'multer';
-import multerS3 from 'multer-s3'
-import aws from 'aws-sdk';
+import S3 from 'aws-s3';
 
+const config = {
+    bucketName: process.env.bucketName,
+    dirName: 'UserImages', /* optional */
+    secretAccessKey : process.env.Secret_Access_Key,
+    accessKeyId : process.env.Access_Key_ID,
+    region : 'ap-south-1'
+};
 
-aws.config,update({
+export const S3Client = new S3(config)
 
-    secretAccessKey : '9aw+pFVs+rgsdThLNemFp8AaTAAJkFDea9IFlyY7',
-
-    accessKeyId : 'AKIAREBITL6KDCI4NOV4',
-
-    region : ' ap-south-1'
-
-});
-
-const s3 = new aws.S3()
-
-const upload  = multer({
-    storage:multerS3({
-        s3,
-        bucket:'brainstorm06',
-        acl :  'public-read',
-        metadata : function (req,file,cb) {
-            cb(null , {fieldName : file.fieldname})
-            
-        },
-        key : function( req,file,cb) {
-            cb(null,Date.now().toString())
-        }
-    })
-})
-
-module.exports = upload;
+export const upload  = multer({})

@@ -32,7 +32,7 @@ export const ProfileSchema  = new mongoose.Schema({
         type :String,
         required : true
     },
-    profileImage : {
+    image : {
         type : String,
         required : true
 

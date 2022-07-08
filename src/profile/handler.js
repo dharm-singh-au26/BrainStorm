@@ -1,13 +1,17 @@
 
 import { getProfile, CreateProfile, profileUpdate} from './repo'
+import { S3Client } from '../utility/profileupload'
+
 
 export const profileHandler = async (userData) =>{
     
     const isProfileExist = await getProfile({userId:userData.userId})
-    if(isProfileExist && isProfileExist.length){
-        return await profileUpdate(userData.userId, userData)
 
-    }else{
+    if(isProfileExist && isProfileExist.length){
+        const uploader = await S3Client.uploadFile(userData.file, userData.fileName)
+        return await profileUpdate(userData.userId, userData)
+    }else
+    {
 
         return await CreateProfile(userData);
     }
