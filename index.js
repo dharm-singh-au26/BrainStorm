@@ -4,6 +4,7 @@ import { config } from './config';
 
 // Route Import
 import { UserRoute } from './src/User/route'
+import { ProfileRoute } from './src/profile/route';
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(bodyParser.json())
 
 // Route Configuration
 app.use('/user', UserRoute)
+app.use('/profile',ProfileRoute)
 
 app.listen(config.PORT,()=>{
     console.log(`server started at PORT: ${config.PORT}`)
