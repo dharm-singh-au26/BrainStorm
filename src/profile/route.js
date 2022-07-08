@@ -1,13 +1,13 @@
 import  express  from "express";
 import { profileHandler } from "./handler";
 import { validateJwtToken } from '../User/jwtToken'
-import { profileUpdate } from "./repo";
+
 
 const Router = express.Router();
 
 Router.get('/userinfo/:userId', validateJwtToken(['admin', 'user']), async (req,res) => {
 
-    const {phone,address,pincode,district,state,country }  = req.body;
+    const {phone,address,pincode,district,state,country,profileImage }  = req.body;
     const userId = req.params.userId;
 
 

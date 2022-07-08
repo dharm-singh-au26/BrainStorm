@@ -12,6 +12,3 @@ export const profileUpdate = async (userId,profileData) => {
     return await Profile.findOneAndUpdate(userId,profileData)
 }
 
-export const uploadImage = async (userData) => {
-    return 
-}
