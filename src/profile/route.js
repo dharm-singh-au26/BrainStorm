@@ -1,16 +1,15 @@
 import  express  from "express";
-import { profileHandler } from "./handler";
+import { profileHandler, getUserProfile } from "./handler";
 import { validateJwtToken } from '../User/jwtToken'
 import { upload } from '../utility/profileupload'
 
 const Router = express.Router();
 
-Router.post('/userinfo/:userId', upload.single('image'),validateJwtToken(['admin', 'user']), async (req, res) => {
-    console.log(req.file)
-    const { file, fileName } = req.file;
+Router.post('/userinfo/:userId', validateJwtToken(['admin', 'user']), upload, async (req, res) => {
+    const { file } = req;
     const {phone,address,pincode,district,state,country,image}  = req.body;
     const userId = req.params.userId;
-    const fillDetails = await  profileHandler({phone,address,pincode,district,state,country, userId,image, file, fileName});
+    const fillDetails = await  profileHandler({phone,address,pincode,district,state,country, userId, file});
 
     if(fillDetails){ 
         res.send({
@@ -21,6 +20,17 @@ Router.post('/userinfo/:userId', upload.single('image'),validateJwtToken(['admin
         res.send({
             message: 'something went wrong'
 
+        })
+    }
+})
+
+Router.get('/get-user-info/:userId', async (req, res) => {
+    const { userId } = req.params;
+    const result = await getUserProfile(userId)
+    if(!!result.length) res.send(result)
+    else {
+        res.send({
+            message: 'something went wrong'
         })
     }
 })

@@ -1,6 +1,6 @@
 
 import { getProfile, CreateProfile, profileUpdate} from './repo'
-import { S3Client } from '../utility/profileupload'
+import { s3Bucket } from '../utility/profileupload'
 
 
 export const profileHandler = async (userData) =>{
@@ -8,11 +8,29 @@ export const profileHandler = async (userData) =>{
     const isProfileExist = await getProfile({userId:userData.userId})
 
     if(isProfileExist && isProfileExist.length){
-        const uploader = await S3Client.uploadFile(userData.file, userData.fileName)
-        return await profileUpdate(userData.userId, userData)
-    }else
-    {
-
+        try {
+            await s3Bucket.upload({
+                Bucket: 'brainstorm06',
+                Key: `${Date.now()}_${userData.file.originalname}`,
+                Body: userData.file.buffer,
+                ACL: 'public-read'
+            }, async (err, result) => {
+                if(err) return { status: 'failed', message: err.message }
+                const userInfo = {
+                    phone: userData.phone,
+                    address: userData.address,
+                    pincode: userData.pincode,
+                    district: userData.district,
+                    state: userData.state,
+                    country: userData.country,
+                    image: result.Location
+                }
+                return await profileUpdate(userData.userId, userInfo)
+            }) 
+        } catch (error) {
+            console.log(error)
+        }
+    }else {
         return await CreateProfile(userData);
     }
     
@@ -34,3 +52,7 @@ export const profileHandler = async (userData) =>{
 
 }
 
+
+export const getUserProfile = async (userId) => {
+    return await getProfile({userId})
+}
